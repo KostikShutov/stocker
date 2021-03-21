@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {% if process.statusWaiting %}
+        <h4>Прогноз находится в очереди</h4>
+        {% set value = 1 %}
+    {% endif %}
+
+    {% if process.statusProcessing %}
+        <h4>Прогноз запущен, необходимо подождать завершения</h4>
+        {% set value = 50 %}
+    {% endif %}
+
+    {% if process.statusDone %}
+        <h4>Прогноз завершен</h4>
+        {% set value = 100 %}
+    {% endif %}
+
+    <div class="mb-3">
+        <div>Метод: {{ process.method|name_method }}</div>
+        <div>Метал: {{ process.metal|name_metal }}</div>
+        <div>Тип прогноза: {{ process.period|name_period }}</div>
+
+        {% if process.statusDone %}
+            <div>Успешно: {{ process.success ? 'Да' : 'Нет' }}</div>
+        {% endif %}
+
+        <div>Запущено в: {{ process.createdAt|date('d.m.Y H:i') }}</div>
+
+        {% if process.endedAt is not null %}
+            <div>Завершено в: {{ process.endedAt|date('d.m.Y H:i') }}</div>
+        {% endif %}
+    </div>
+
+    <div class="progress" style="height: 20px">
+        <div class="progress-bar progress-bar-striped progress-bar-animated"
+             role="progressbar"
+             aria-valuenow="{{ value }}"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             style="width: {{ value }}%"></div>
+    </div>
+{% endblock %}

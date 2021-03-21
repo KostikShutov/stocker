@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {% set length = filters|length %}
+
+    {% if length > 0 %}
+        {% set size = length < 5 ? length : 5 %}
+
+        <form class="form mb-2">
+            <label class="w-100 mb-0">
+                <select name="filter" class="custom-select" size="{{ size }}">
+                    {% for filter, name in filters %}
+                        <option value="{{ filter }}"{{ app.request.get('filter') == filter ? ' selected' }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <button type="submit" class="btn btn-outline-primary mt-2">Выбрать</button>
+        </form>
+    {% endif %}
+
+    {% if predictions is empty %}
+        <span>Нет данных</span>
+    {% else %}
+        {% set image = predictions|first.image %}
+
+        <div class="w-50 my-4">
+            <img class="w-100" src="data:image/png;base64,{{ image.data }}" alt="">
+
+            <a href="{{ path('image_show', { id: image.id }) }}"
+               target="_blank"
+               rel="noopener noreferrer">Открыть полностью</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Дата</th>
+                <th scope="col">Котировка</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for prediction in predictions %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ prediction.date|date('d.m.Y') }}</td>
+                    <td>{{ prediction.value }} ₽</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

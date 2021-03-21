@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <ul class="list-group">
+        {% for method in methods %}
+            <li class="list-group-item d-flex align-items-center justify-content-between">
+                <span>{{ method.title }}</span>
+                <a href="{{ path('method_configure', { method: method.slug }) }}" class="btn btn-primary">Выбрать</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

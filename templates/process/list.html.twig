@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {% if processes is empty %}
+        <span>Нет данных</span>
+    {% else %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Метод</th>
+                <th scope="col">Метал</th>
+                <th scope="col">Тип прогноза</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Успешно</th>
+                <th scope="col">Запущено в</th>
+                <th scope="col">Завершено в</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for process in processes %}
+                <tr>
+                    <th class="align-middle" scope="row">{{ loop.index }}</th>
+                    <td class="align-middle">{{ process.method|name_method }}</td>
+                    <td class="align-middle">{{ process.metal|name_metal }}</td>
+                    <td class="align-middle">{{ process.period|name_period }}</td>
+                    <td class="align-middle">{{ process.status|name_status }}</td>
+                    <td class="align-middle">{{ process.success ? 'Да' : 'Нет' }}</td>
+                    <td class="align-middle">{{ process.createdAt|date('d.m.Y H:i') }}</td>
+                    <td class="align-middle">{{ process.endedAt is null ? '-' : process.endedAt|date('d.m.Y H:i') }}</td>
+                    <td class="align-middle">
+                        <a href="{{ path('process_show', { id: process.id }) }}"
+                           class="btn btn-primary">Подробнее</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

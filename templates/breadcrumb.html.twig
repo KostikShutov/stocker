@@ -1,0 +1,18 @@
+{% if breadcrumbs is not empty %}
+    <nav class="mt-3" aria-label="breadcrumb">
+        <ol class="breadcrumb my-0">
+            {% for breadcrumb in breadcrumbs %}
+                {% set route = breadcrumb['route'] %}
+                {% set name = breadcrumb['name'] %}
+
+                {% if route is null %}
+                    <li class="breadcrumb-item">{{ name }}</li>
+                {% else %}
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a href="{{ path(route) }}">{{ name }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </nav>
+{% endif %}

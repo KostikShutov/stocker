@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="row flex-lg-nowrap mx-0">
+        {% include 'home/card.html.twig' with {
+            title: 'Прогнозирование',
+            text: 'В данном разделе содержится выбор метода для прогнозирования, его настройка, обучение нейронной сети и запуск прогнозирования',
+            route: 'method_list',
+            class: 'mr-lg-3 mb-3 mb-lg-0'
+        } only %}
+
+        {% include 'home/card.html.twig' with {
+            title: 'История',
+            text: 'В данном разделе содержится просмотр истории прошлых результатов прогнозирования',
+            route: 'prediction_list'
+        } only %}
+    </div>
+{% endblock %}

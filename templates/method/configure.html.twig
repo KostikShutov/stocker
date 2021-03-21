@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h4>{{ app.request.get('method')|name_method }}</h4>
+
+    {{ form(form) }}
+{% endblock %}

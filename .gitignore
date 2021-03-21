@@ -1,4 +1,8 @@
-.idea
+*.idea
+/node_modules
+/public/assets
+*.DS_Store
+*__pycache__
 
 ###> symfony/framework-bundle ###
 /.env.local

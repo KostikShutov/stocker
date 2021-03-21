@@ -1,19 +1,50 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
-        {% block stylesheets %}
-            {#{{ encore_entry_link_tags('app') }}#}
-        {% endblock %}
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{{ asset('gold.png') }}" type="image/png">
+    {% if title is defined %}
+        <title>{{ title }}</title>
+    {% endif %}
 
-        {% block javascripts %}
-            {#{{ encore_entry_script_tags('app') }}#}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('assets/styles.css') }}">
+
+        <style>
+            label.required:after {
+                color: red;
+                content: " *";
+            }
+        </style>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script type="text/javascript" src="{{ asset('assets/index.js') }}"></script>
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{{ path('home') }}">
+        <img src="{{ asset('gold.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
+        <span>Stocker</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-link active" href="{{ path('home') }}">{{ constant('App\\Controller\\HomeController::TITLE_HOME') }}</a>
+            <a class="nav-link" href="{{ path('method_list') }}">{{ constant('App\\Controller\\MethodController::TITLE_LIST') }}</a>
+            <a class="nav-link" href="{{ path('prediction_list') }}">{{ constant('App\\Controller\\PredictionController::TITLE_LIST') }}</a>
+            <a class="nav-link" href="{{ path('process_list') }}">{{ constant('App\\Controller\\ProcessController::TITLE_LIST') }}</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    {{ render(controller('App\\Controller\\BreadcrumbController::renderAction')) }}
+
+    <div class="mt-3">{% block content %}{% endblock %}</div>
+</div>
+</body>
 </html>
