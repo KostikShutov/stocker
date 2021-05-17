@@ -1,11 +1,47 @@
+import io
+import base64
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from flask import request
 from sqlalchemy import create_engine
 
-connection = create_engine('mysql+pymysql://root:root@localhost/stocker')
+
+def get_args():
+    args = request.args
+
+    return args.get('metal', type=int), \
+           args.get('provider', type=str), \
+           args.get('start', type=str), \
+           args.get('end', type=str), \
+           args.get('period', type=int)
+
+
+def get_result(data, new_data):
+    plt.style.use('fivethirtyeight')
+
+    bytes = io.BytesIO()
+
+    plt.figure(figsize=(16, 8))
+    plt.title('Model')
+    plt.xlabel('Date', fontsize=18)
+    plt.ylabel('Close Price USD ($)', fontsize=18)
+    plt.plot(data['price'])
+    plt.plot(new_data['Predictions'])
+    plt.legend(['Train', 'Predictions'], loc='lower right')
+
+    plt.savefig(bytes, format='png', bbox_inches="tight")
+    plt.close()
+
+    bytes = base64.b64encode(bytes.getvalue()).decode("utf-8").replace("\n", "")
+
+    new_data.reset_index(level=0, inplace=True)
+
+    return pd.DataFrame({'Image': [bytes], 'Data': [new_data]}).to_json(orient='index')
 
 
 def get_data(metal, provider, start=None, end=None):
+    connection = create_engine('mysql+pymysql://root:root@172.22.0.4/stocker')
     sql = "SELECT date, open_price, high_price, low_price, close_price FROM stocks WHERE metal_id = {0}" \
           " AND provider = '{1}'".format(metal, provider)
 

@@ -4,6 +4,11 @@
 *.DS_Store
 *__pycache__
 
+###> docker ###
+/docker/mysql/data/*
+/docker/nginx/logs/*
+###< docker ###
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
