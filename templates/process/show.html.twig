@@ -25,6 +25,8 @@
             <div>Успешно: {{ process.success ? 'Да' : 'Нет' }}</div>
         {% endif %}
 
+        {% set options = process.options %}
+        <div>Диапазон известных котировок: {{ options['start'] is null ? 'нет' : options['start']|date('d.m.Y') }} - {{ options['end'] is null ? 'нет' : options['end']|date('d.m.Y') }}</div>
         <div>Запущено в: {{ process.createdAt|date('d.m.Y H:i') }}</div>
 
         {% if process.endedAt is not null %}
