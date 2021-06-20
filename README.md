@@ -3,11 +3,11 @@
 Software system for stock prediction
 
 ## Requirements
-* php 8.0.1
-* nodejs 12.20.2
-* mysql 8.0.19
+* php 8.0
+* nodejs 16.2
+* mysql 8.0
 * redis 5.0
-* python 3.8.10
+* python 3.8
 
 ### Composer and nodejs install
 ```
