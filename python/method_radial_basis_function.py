@@ -5,10 +5,9 @@ import tensorflow as tf
 from datetime import date, timedelta
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Layer
-from keras.losses import binary_crossentropy
 from tensorflow.keras.initializers import RandomUniform, Initializer, Constant
 from sklearn.preprocessing import MinMaxScaler
-from common import get_args, get_data, get_result
+from common import get_args, is_evaluate, get_evaluate, get_data, get_result
 
 
 class RBFLayer(Layer):
@@ -76,13 +75,15 @@ def run():
     model.add(RBFLayer(500, betas=2.0, input_shape=(x_train.shape[1], 1)))
     model.add(Dropout(.2))
     model.add(Dense(1, activation='sigmoid', name='foo'))
-    model.compile(optimizer='adam', loss=binary_crossentropy)
-    model.fit(x_train, y_train, epochs=10, batch_size=256, verbose=0)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(x_train, y_train, epochs=10, batch_size=256)
+
+    if is_evaluate():
+        return get_evaluate(model, x_train, y_train)
 
     # Get result
     test_data = scaled_data[training_data_len - 60:]
     x_test = []
-    y_test = dataset[training_data_len:, :]
 
     for i in range(60, len(test_data)):
         x_test.append(test_data[i - 60:i, 0])

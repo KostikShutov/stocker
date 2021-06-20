@@ -1,5 +1,6 @@
 parameters:
     python_url: '%env(resolve:PYTHON_URL)%'
+    method_url: '%python_url%/method/'
 
 services:
     _defaults:
@@ -27,6 +28,6 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
-    App\Service\PredictionCreator:
+    App\Service\MethodRequester:
         arguments:
-            $pythonUrl: '%python_url%'
+            $methodUrl: '%method_url%'

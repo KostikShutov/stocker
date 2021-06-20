@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use DateTime;
-use Exception;
 use App\Entity\Image;
 use App\Entity\Metal;
 use App\Entity\Period;
@@ -22,18 +21,8 @@ final class JsonPredictionParser
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function parse(Period $period, Metal $metal, Method $method, string $json): void
+    public function parse(Period $period, Metal $metal, Method $method, array $json): void
     {
-        $json = json_decode($json, true);
-
-        if (!is_array($json)) {
-            throw new Exception();
-        }
-
-        $json = reset($json);
         $image = new Image($json['Image']);
         $now = new DateTime();
 

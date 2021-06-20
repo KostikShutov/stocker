@@ -13,6 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Period implements Information
 {
+    const PERIOD_ULTRA_SHORT = 'ultra_short';
+    const PERIOD_SHORT = 'short';
+    const PERIOD_MIDDLE = 'middle';
+    const PERIOD_LONG = 'long';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")

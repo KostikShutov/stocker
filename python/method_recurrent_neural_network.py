@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 from sklearn.preprocessing import MinMaxScaler
-from common import get_args, get_data, get_result
+from common import get_args, is_evaluate, get_evaluate, get_data, get_result
 
 
 def run():
@@ -38,13 +38,15 @@ def run():
     model.add(LSTM(units=500, return_sequences=False))
     model.add(Dropout(.2))
     model.add(Dense(units=1, activation='sigmoid'))
-    model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train, y_train, epochs=5, batch_size=32, verbose=0)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(x_train, y_train, epochs=5, batch_size=32)
+
+    if is_evaluate():
+        return get_evaluate(model, x_train, y_train)
 
     # Get result
     test_data = scaled_data[training_data_len - 60:]
     x_test = []
-    y_test = dataset[training_data_len:, :]
 
     for i in range(60, len(test_data)):
         x_test.append(test_data[i - 60:i, 0])

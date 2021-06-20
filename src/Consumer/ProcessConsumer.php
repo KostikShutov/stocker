@@ -38,6 +38,7 @@ final class ProcessConsumer implements MessageHandlerInterface
                 $process->setSuccess(true);
             } catch (Throwable $e) {
                 echo $e->getMessage();
+                echo $e->getTraceAsString();
                 $process->setSuccess(false);
             }
 

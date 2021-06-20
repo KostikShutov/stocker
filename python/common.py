@@ -17,6 +17,16 @@ def get_args():
            args.get('period', type=int)
 
 
+def is_evaluate():
+    return 1 == request.args.get('evaluate', type=int, default=0)
+
+
+def get_evaluate(model, x, y):
+    metrics = model.evaluate(x, y)
+
+    return pd.DataFrame({'Loss': metrics[0], 'Acc': metrics[1]}, index=[0]).to_json()
+
+
 def get_result(data, new_data):
     plt.style.use('fivethirtyeight')
 

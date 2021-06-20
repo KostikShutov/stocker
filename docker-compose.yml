@@ -88,6 +88,11 @@ services:
       context: .
       dockerfile: docker/python/Dockerfile
     container_name: python
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
     ports:
       - "10005:5000"
     volumes:

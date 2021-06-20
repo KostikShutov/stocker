@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout, Conv1D, MaxPooling1D, Flatten, Activation
 from sklearn.preprocessing import MinMaxScaler
-from common import get_args, get_data, get_result
+from common import get_args, is_evaluate, get_evaluate, get_data, get_result
 
 
 def run():
@@ -38,13 +38,15 @@ def run():
     model.add(Flatten())
     model.add(Dense(units=1))
     model.add(Activation('tanh'))
-    model.compile(loss='mse', optimizer='adam', metrics=['acc', 'mae'])
-    model.fit(x_train, y_train, epochs=5, batch_size=256, verbose=0)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.fit(x_train, y_train, epochs=5, batch_size=256)
+
+    if is_evaluate():
+        return get_evaluate(model, x_train, y_train)
 
     # Get result
     test_data = scaled_data[training_data_len - 60:]
     x_test = []
-    y_test = dataset[training_data_len:, :]
 
     for i in range(60, len(test_data)):
         x_test.append(test_data[i - 60:i, 0])

@@ -6,20 +6,20 @@ namespace App\Command;
 
 use DateTime;
 use InvalidArgumentException;
-use App\Service\Api\ProviderResolver;
+use App\Service\StockDownloader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ReceiveQuotesCommand extends Command
+final class StocksDownloadCommand extends Command
 {
-    private ProviderResolver $providerResolver;
+    private StockDownloader $stockDownloader;
 
-    public function __construct(ProviderResolver $providerResolver)
+    public function __construct(StockDownloader $stockDownloader)
     {
         parent::__construct();
-        $this->providerResolver = $providerResolver;
+        $this->stockDownloader = $stockDownloader;
     }
 
     /**
@@ -29,6 +29,7 @@ class ReceiveQuotesCommand extends Command
     {
         $this
             ->setName('app:stocks:download')
+            ->setAliases(['st:download'])
             ->setDescription('Получить котировки за определенный период и записать их в базу данных')
             ->addOption('provider', 'p', InputOption::VALUE_REQUIRED, 'Api provider id: yahoo, stooq')
             ->addOption('start', null, InputOption::VALUE_REQUIRED, 'Start date, d.m.Y')
@@ -40,12 +41,7 @@ class ReceiveQuotesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $provider = $this->providerResolver->getProvider((string) $input->getOption('provider'));
-
-        if (is_null($provider)) {
-            throw new InvalidArgumentException('Unknown api provider id');
-        }
-
+        $provider = (string) $input->getOption('provider');
         $start = $this->getDateFromString((string) $input->getOption('start'));
         $end = $this->getDateFromString((string) $input->getOption('end'));
 
@@ -53,13 +49,9 @@ class ReceiveQuotesCommand extends Command
             throw new InvalidArgumentException('Invalid format of start or end date, correct format is d.m.Y');
         }
 
-        if ($start > $end) {
-            throw new InvalidArgumentException('End date more than start date');
-        }
+        $count = $this->stockDownloader->download($provider, $start, $end);
 
-        $count = $provider->provide($start, $end);
-
-        $output->writeln(sprintf('%d known quotes was created', $count));
+        $output->writeln(sprintf('%d stocks was created', $count));
 
         return 0;
     }

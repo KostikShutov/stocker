@@ -4,33 +4,38 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use DateTime;
 use Throwable;
 use App\Entity\Metal;
 use App\Entity\Method;
 use App\Entity\Period;
 use App\Entity\Process;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Repository\StockRepository;
 
 final class PredictionCreator
 {
     private InformationFinder $informationFinder;
 
-    private HttpClientInterface $httpClient;
+    private StockRepository $stockRepository;
+
+    private StockDownloader $stockDownloader;
+
+    private MethodRequester $methodRequester;
 
     private JsonPredictionParser $jsonPredictionParser;
 
-    private string $pythonUrl;
-
     public function __construct(
         InformationFinder $informationFinder,
-        HttpClientInterface $httpClient,
-        JsonPredictionParser $jsonPredictionParser,
-        string $pythonUrl
+        StockRepository $stockRepository,
+        StockDownloader $stockDownloader,
+        MethodRequester $methodRequester,
+        JsonPredictionParser $jsonPredictionParser
     ) {
         $this->informationFinder = $informationFinder;
-        $this->httpClient = $httpClient;
+        $this->stockRepository = $stockRepository;
+        $this->stockDownloader = $stockDownloader;
+        $this->methodRequester = $methodRequester;
         $this->jsonPredictionParser = $jsonPredictionParser;
-        $this->pythonUrl = $pythonUrl . '/method/';
     }
 
     /**
@@ -45,17 +50,19 @@ final class PredictionCreator
         /** @var Method|null $method */
         $method = $this->informationFinder->getInformationBySlug(Method::class, $process->getMethod());
         $options = $process->getOptions();
+        $provider = $options['provider'];
+        $last = $this->stockRepository->findLast($metal, $provider);
 
-        $content = $this->httpClient->request('GET', $this->pythonUrl . $method->getSlug(), [
-            'query' => [
-                'metal'    => $metal->getId(),
-                'provider' => $options['provider'],
-                'start'    => $options['start'],
-                'end'      => $options['end'],
-                'period'   => $period->getDays()
-            ]
-        ])->getContent();
+        $this->stockDownloader->download($provider, $last->getDate(), new DateTime());
 
-        $this->jsonPredictionParser->parse($period, $metal, $method, $content);
+        $json = $this->methodRequester->request($method->getSlug(), [
+            'metal'    => $metal->getId(),
+            'provider' => $provider,
+            'start'    => $options['start'],
+            'end'      => $options['end'],
+            'period'   => $period->getDays()
+        ]);
+
+        $this->jsonPredictionParser->parse($period, $metal, $method, reset($json));
     }
 }
