@@ -33,7 +33,7 @@ def run():
     model.add(LSTM(50, return_sequences=False))
     model.add(Dense(25))
     model.add(Dense(1))
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['acc'])
     model.fit(x_train, y_train, epochs=5, batch_size=32)
 
     if is_evaluate():

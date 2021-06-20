@@ -75,7 +75,7 @@ def run():
     model.add(RBFLayer(500, betas=2.0, input_shape=(x_train.shape[1], 1)))
     model.add(Dropout(.2))
     model.add(Dense(1, activation='sigmoid', name='foo'))
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['acc'])
     model.fit(x_train, y_train, epochs=10, batch_size=256)
 
     if is_evaluate():

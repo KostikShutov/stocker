@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use DateTime;
 use InvalidArgumentException;
 use App\Service\StockDownloader;
+use App\Service\DateParserHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,8 +42,8 @@ final class StocksDownloadCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $provider = (string) $input->getOption('provider');
-        $start = $this->getDateFromString((string) $input->getOption('start'));
-        $end = $this->getDateFromString((string) $input->getOption('end'));
+        $start = DateParserHelper::getDateFromFormat((string) $input->getOption('start'));
+        $end = DateParserHelper::getDateFromFormat((string) $input->getOption('end'));
 
         if (is_null($start) || is_null($end)) {
             throw new InvalidArgumentException('Invalid format of start or end date, correct format is d.m.Y');
@@ -54,12 +54,5 @@ final class StocksDownloadCommand extends Command
         $output->writeln(sprintf('%d stocks was created', $count));
 
         return 0;
-    }
-
-    private function getDateFromString(string $date): ?DateTime
-    {
-        $date = date_create_from_format('d.m.Y', $date);
-
-        return $date instanceof DateTime ? $date->setTime(0, 0) : null;
     }
 }

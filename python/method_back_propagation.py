@@ -38,7 +38,7 @@ def run():
     model.add(Dense(units=500, kernel_initializer='uniform', activation='relu'))
     model.add(Dropout(.2))
     model.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['acc'])
     model.fit(x_train, y_train, epochs=5, batch_size=32)
 
     if is_evaluate():

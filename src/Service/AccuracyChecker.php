@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Throwable;
+use DateTimeInterface;
 use App\Entity\Metal;
 use App\Entity\Method;
-use App\Entity\Period;
 use App\Service\Api\ApiProvider;
 
 final class AccuracyChecker
@@ -27,25 +27,26 @@ final class AccuracyChecker
     /**
      * @throws Throwable
      */
-    public function check(): void
+    public function check(DateTimeInterface $start = null, DateTimeInterface $end = null): void
     {
         /** @var Method[] $methods */
         $methods = $this->informationFinder->getInformation(Method::class);
-        /** @var Metal $metal */
-        $metal = $this->informationFinder->getInformationBySlug(Metal::class, Metal::METAL_GOLD);
-        /** @var Period $period */
-        $period = $this->informationFinder->getInformationBySlug(Period::class, Period::PERIOD_SHORT);
+        /** @var int $metal */
+        $metal = $this->informationFinder->getInformationBySlug(Metal::class, Metal::METAL_GOLD)->getId();
 
         foreach ($methods as $method) {
             $title = $method->getTitle();
+            $slug = $method->getSlug();
             $time = time();
-            echo sprintf('[%s] Start', $title) . PHP_EOL;
+            echo sprintf('[%s] Start %s', $title, $slug) . PHP_EOL;
 
             try {
-                $json = $this->methodRequester->request($method->getSlug(), [
-                    'metal'    => $metal->getId(),
+                $json = $this->methodRequester->request($slug, [
+                    'metal'    => $metal,
                     'provider' => ApiProvider::PROVIDER_YAHOO,
-                    'period'   => $period->getDays(),
+                    'start'    => $start?->format('Y-m-d'),
+                    'end'      => $end?->format('Y-m-d'),
+                    'period'   => 0,
                     'evaluate' => 1
                 ]);
 
@@ -53,7 +54,7 @@ final class AccuracyChecker
                 echo sprintf('[%s] Loss: %f, Accuracy: %f', $title, $json['Loss'][0], $json['Acc'][0]);
             } catch (Throwable $e) {
                 echo sprintf('[%s] End with exception', $title) . PHP_EOL;
-                echo sprintf('[%s] Message %s', $title, $e->getMessage());
+                echo sprintf('[%s] Message: %s', $title, $e->getMessage());
             }
 
             echo PHP_EOL . PHP_EOL;

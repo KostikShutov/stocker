@@ -38,8 +38,8 @@ def run():
     model.add(LSTM(units=500, return_sequences=False))
     model.add(Dropout(.2))
     model.add(Dense(units=1, activation='sigmoid'))
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(x_train, y_train, epochs=5, batch_size=32)
+    model.compile(optimizer='RMSprop', loss='mean_squared_error', metrics=['acc'])
+    model.fit(x_train, y_train, epochs=5, batch_size=512, validation_split=0.25)
 
     if is_evaluate():
         return get_evaluate(model, x_train, y_train)

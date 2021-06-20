@@ -38,7 +38,7 @@ def run():
     model.add(Flatten())
     model.add(Dense(units=1))
     model.add(Activation('tanh'))
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='mean_squared_error', metrics=['acc'])
     model.fit(x_train, y_train, epochs=5, batch_size=256)
 
     if is_evaluate():
