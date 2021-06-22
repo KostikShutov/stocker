@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Service;
 
 use DateTime;
-use Symfony\Component\HttpClient\Exception\TransportException;
 use Throwable;
 use App\Entity\Metal;
 use App\Entity\Method;
 use App\Entity\Period;
 use App\Entity\Process;
 use App\Repository\StockRepository;
+use Symfony\Component\HttpClient\Exception\TransportException;
 
 final class PredictionCreator
 {
