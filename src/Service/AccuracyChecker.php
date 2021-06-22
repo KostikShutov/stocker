@@ -51,7 +51,7 @@ final class AccuracyChecker
                 ]);
 
                 echo sprintf('[%s] End with %d seconds', $title, time() - $time) . PHP_EOL;
-                echo sprintf('[%s] Loss: %f, Accuracy: %f', $title, $json['Loss'][0], $json['Acc'][0]);
+                echo sprintf('[%s] %s', $title, $json[0]['Data']);
             } catch (Throwable $e) {
                 echo sprintf('[%s] End with exception', $title) . PHP_EOL;
                 echo sprintf('[%s] Message: %s', $title, $e->getMessage());

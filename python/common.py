@@ -1,5 +1,6 @@
 import io
 import base64
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,24 +8,45 @@ from flask import request
 from sqlalchemy import create_engine
 
 
-def get_args():
-    args = request.args
-
-    return args.get('metal', type=int), \
-           args.get('provider', type=str), \
-           args.get('start', type=str), \
-           args.get('end', type=str), \
-           args.get('period', type=int)
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', None)
 
 
-def is_evaluate():
-    return 1 == request.args.get('evaluate', type=int, default=0)
+def get_params_from_request():
+    params = request.args
+
+    return params.get('metal', type=int), \
+           params.get('provider', type=str, default='yahoo'), \
+           params.get('period', type=int), \
+           params.get('start', type=str, default=None), \
+           params.get('end', type=str, default=None), \
+           1 == params.get('evaluate', type=int, default=0)
+
+
+def get_params_from_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--metal', type=int, required=True)
+    parser.add_argument('--provider', type=str, default='yahoo')
+    parser.add_argument('--period', type=int, required=True)
+    parser.add_argument('--start', type=str, default=None)
+    parser.add_argument('--end', type=str, default=None)
+    parser.add_argument('--evaluate', type=int, default=0)
+    params = parser.parse_args()
+
+    return params.metal, \
+           params.provider, \
+           params.period, \
+           params.start, \
+           params.end, \
+           1 == params.evaluate
 
 
 def get_evaluate(model, x, y):
     metrics = model.evaluate(x, y)
 
-    return pd.DataFrame({'Loss': metrics[0], 'Acc': metrics[1]}, index=[0]).to_json()
+    return pd.DataFrame({'Data': ["Loss: %f, Accuracy %f" % (metrics[0], metrics[1])]})
 
 
 def get_result(data, new_data):
@@ -39,15 +61,13 @@ def get_result(data, new_data):
     plt.plot(data['price'])
     plt.plot(new_data['Predictions'])
     plt.legend(['Train', 'Predictions'], loc='lower right')
-
     plt.savefig(bytes, format='png', bbox_inches="tight")
-    plt.close()
 
     bytes = base64.b64encode(bytes.getvalue()).decode("utf-8").replace("\n", "")
 
     new_data.reset_index(level=0, inplace=True)
 
-    return pd.DataFrame({'Image': [bytes], 'Data': [new_data]}).to_json(orient='index')
+    return plt, pd.DataFrame({'Image': [bytes], 'Data': [new_data]})
 
 
 def get_data(metal, provider, start=None, end=None):

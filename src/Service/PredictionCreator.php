@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use DateTime;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Throwable;
 use App\Entity\Metal;
 use App\Entity\Method;
@@ -53,7 +54,9 @@ final class PredictionCreator
         $provider = $options['provider'];
         $last = $this->stockRepository->findLast($metal, $provider);
 
-        $this->stockDownloader->download($provider, $last->getDate(), new DateTime());
+        try {
+            $this->stockDownloader->download($provider, $last->getDate(), new DateTime());
+        } catch (TransportException) {}
 
         $json = $this->methodRequester->request($method->getSlug(), [
             'metal'    => $metal->getId(),

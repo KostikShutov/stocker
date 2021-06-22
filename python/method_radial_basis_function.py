@@ -7,7 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Layer
 from tensorflow.keras.initializers import RandomUniform, Initializer, Constant
 from sklearn.preprocessing import MinMaxScaler
-from common import get_args, is_evaluate, get_evaluate, get_data, get_result
+from common import get_params_from_args, get_evaluate, get_data, get_result
 
 
 class RBFLayer(Layer):
@@ -51,9 +51,8 @@ class RBFLayer(Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
-def run():
+def run(metal, provider, period, start=None, end=None, evaluate=False):
     # Get data
-    metal, provider, start, end, days = get_args()
     data = get_data(metal, provider, start, end)
     dataset = data.values
     training_data_len = math.ceil(len(dataset) * 0.8)
@@ -78,8 +77,8 @@ def run():
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['acc'])
     model.fit(x_train, y_train, epochs=10, batch_size=256)
 
-    if is_evaluate():
-        return get_evaluate(model, x_train, y_train)
+    if evaluate:
+        return None, get_evaluate(model, x_train, y_train)
 
     # Get result
     test_data = scaled_data[training_data_len - 60:]
@@ -93,7 +92,7 @@ def run():
     predictions = np.array([])
     last = x_test[-1]
 
-    for i in range(days):
+    for i in range(period):
         curr_prediction = model.predict(np.array([last]))
         last = np.concatenate([last[1:], curr_prediction])
         predictions = np.concatenate([predictions, curr_prediction[0]])
@@ -102,10 +101,18 @@ def run():
     dicts = []
     curr_date = date.today()
 
-    for i in range(days):
+    for i in range(period):
         curr_date = curr_date + timedelta(days=1)
         dicts.append({'Predictions': predictions[i], "Date": curr_date})
 
     new_data = pd.DataFrame(dicts).set_index("Date")
 
     return get_result(data, new_data)
+
+
+if __name__ == '__main__':
+    metal, provider, period, start, end, evaluate = get_params_from_args()
+    plt, result = run(metal, provider, period, start, end, evaluate)
+    if plt is not None:
+        plt.show()
+    print(result['Data'])
