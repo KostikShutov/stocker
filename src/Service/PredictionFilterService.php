@@ -4,26 +4,23 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Metal;
-use App\Entity\Method;
-use App\Entity\Period;
+use App\Entity\Process;
 use App\Entity\Prediction;
+use App\Repository\ProcessRepository;
 use App\Repository\PredictionRepository;
 
 final class PredictionFilterService
 {
-    const CREATED_AT_FORMAT = 'd.m.Y H:i:s';
+    private ProcessRepository $processRepository;
 
     private PredictionRepository $predictionRepository;
 
-    private InformationFinder $informationFinder;
-
     public function __construct(
-        PredictionRepository $predictionRepository,
-        InformationFinder $informationFinder
+        ProcessRepository $processRepository,
+        PredictionRepository $predictionRepository
     ) {
+        $this->processRepository = $processRepository;
         $this->predictionRepository = $predictionRepository;
-        $this->informationFinder = $informationFinder;
     }
 
     /**
@@ -33,23 +30,17 @@ final class PredictionFilterService
     {
         $i = 1;
         $filters = [];
-        $predictions = $this->predictionRepository->findPredictionsGroupedByCreatedAt();
+        /** @var Process[] $processes */
+        $processes = $this->processRepository->findBy(['success' => true], ['id' => 'DESC']);
 
-        foreach ($predictions as $prediction) {
-            $key = implode(',', [
-                $metal = $prediction->getMetal()->getSlug(),
-                $method = $prediction->getMethod()->getSlug(),
-                $period = $prediction->getPeriod()->getSlug(),
-                $createdAt = $prediction->getCreatedAt()->format(self::CREATED_AT_FORMAT)
-            ]);
-
-            $filters[$key] = sprintf(
+        foreach ($processes as $process) {
+            $filters[$process->getId()] = sprintf(
                 '%d) Металл: %s, Метод: %s, Тип: %s, Создано: %s',
                 $i,
-                $this->informationFinder->getInformationBySlug(Metal::class, $metal)->getTitle(),
-                $this->informationFinder->getInformationBySlug(Method::class, $method)->getTitle(),
-                $this->informationFinder->getInformationBySlug(Period::class, $period)->getTitle(),
-                $createdAt
+                $process->getMetal()->getTitle(),
+                $process->getMethod()->getTitle(),
+                $process->getPeriod()->getTitle(),
+                $process->getEndedAt()->format('d.m.Y H:i:s')
             );
 
             $i++;
@@ -61,24 +52,11 @@ final class PredictionFilterService
     /**
      * @return Prediction[]
      */
-    public function getPredictionsByFilter(string $filter): array
+    public function getPredictionsByProcess(int $process): array
     {
-        $filter = explode(',', $filter);
+        /** @var Process|null $process */
+        $process = $this->processRepository->find($process);
 
-        if (is_array($filter) && 4 === count($filter)) {
-            /** @var Metal|null $metal */
-            $metal = $this->informationFinder->getInformationBySlug(Metal::class, $filter[0]);
-            /** @var Method|null $method */
-            $method = $this->informationFinder->getInformationBySlug(Method::class, $filter[1]);
-            /** @var Period|null $period */
-            $period = $this->informationFinder->getInformationBySlug(Period::class, $filter[2]);
-            $createdAt = date_create_from_format(self::CREATED_AT_FORMAT, $filter[3]);
-
-            if ($metal && $method && $period && $createdAt) {
-                return $this->predictionRepository->findByFilter($metal, $method, $period, $createdAt);
-            }
-        }
-
-        return [];
+        return is_null($process) ? [] : $this->predictionRepository->findByProcess($process);
     }
 }

@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use DateTime;
-use App\Entity\Image;
-use App\Entity\Metal;
-use App\Entity\Period;
-use App\Entity\Method;
+use App\Entity\Process;
 use App\Entity\Prediction;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,20 +17,14 @@ final class JsonPredictionParser
         $this->entityManager = $entityManager;
     }
 
-    public function parse(Period $period, Metal $metal, Method $method, array $json): void
+    public function parse(Process $process, array $json): void
     {
-        $image = new Image($json['Image']);
-        $now = new DateTime();
-
-        $this->entityManager->persist($image);
+        $process->setImage($json['Image']);
 
         foreach ($json['Data'] as $value) {
-            $prediction = (new Prediction($now))
-                ->setPeriod($period)
+            $prediction = (new Prediction())
+                ->setProcess($process)
                 ->setDate(date_create()->setTimestamp($value['Date'] / 1000))
-                ->setImage($image)
-                ->setMetal($metal)
-                ->setMethod($method)
                 ->setValue($value['Predictions']);
 
             $this->entityManager->persist($prediction);

@@ -22,9 +22,9 @@
             {% for process in processes %}
                 <tr>
                     <th class="align-middle" scope="row">{{ loop.index }}</th>
-                    <td class="align-middle">{{ process.method|name_method }}</td>
-                    <td class="align-middle">{{ process.metal|name_metal }}</td>
-                    <td class="align-middle">{{ process.period|name_period }}</td>
+                    <td class="align-middle">{{ process.method.title }}</td>
+                    <td class="align-middle">{{ process.metal.title }}</td>
+                    <td class="align-middle">{{ process.period.title }}</td>
                     <td class="align-middle">{{ process.status|name_status }}</td>
                     <td class="align-middle">{{ process.success ? 'Да' : 'Нет' }}</td>
                     <td class="align-middle">{{ process.createdAt|date('d.m.Y H:i') }}</td>

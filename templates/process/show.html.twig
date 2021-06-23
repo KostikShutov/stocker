@@ -7,8 +7,10 @@
     {% endif %}
 
     {% if process.statusProcessing %}
-        <h4>Прогноз запущен, необходимо подождать завершения</h4>
-        {% set value = 50 %}
+        <h4 data-url-check="{{ path('process_check', { id: process.id }) }}"
+            data-url-redirect="{{ path('prediction_list', { show: process.id }) }}"
+            data-status-processing>Прогноз запущен, необходимо подождать завершения</h4>
+        {% set value = 10 %}
     {% endif %}
 
     {% if process.statusDone %}
@@ -17,9 +19,9 @@
     {% endif %}
 
     <div class="mb-3">
-        <div>Метод: {{ process.method|name_method }}</div>
-        <div>Метал: {{ process.metal|name_metal }}</div>
-        <div>Тип прогноза: {{ process.period|name_period }}</div>
+        <div>Метод: {{ process.method.title }}</div>
+        <div>Метал: {{ process.metal.title }}</div>
+        <div>Тип прогноза: {{ process.period.title }}</div>
 
         {% if process.statusDone %}
             <div>Успешно: {{ process.success ? 'Да' : 'Нет' }}</div>
@@ -40,6 +42,7 @@
              aria-valuenow="{{ value }}"
              aria-valuemin="0"
              aria-valuemax="100"
-             style="width: {{ value }}%"></div>
+             style="width: {{ value }}%"
+             data-width="{{ value }}"></div>
     </div>
 {% endblock %}

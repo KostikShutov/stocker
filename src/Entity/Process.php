@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -27,6 +28,32 @@ class Process
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private int $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Metal", inversedBy="predictions")
+     */
+    private Metal $metal;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Method", inversedBy="methods")
+     */
+    private Method $method;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Period", inversedBy="periods")
+     */
+    private Period $period;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $image = null;
+
+    /**
+     * @param Collection|Prediction[]
+     * @ORM\OneToMany(targetEntity="Prediction", mappedBy="process")
+     */
+    private Collection|array $predictions;
 
     /**
      * @ORM\Column
@@ -61,6 +88,72 @@ class Process
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getMetal(): Metal
+    {
+        return $this->metal;
+    }
+
+    public function setMetal(Metal $metal): self
+    {
+        $this->metal = $metal;
+
+        return $this;
+    }
+
+    public function getMethod(): Method
+    {
+        return $this->method;
+    }
+
+    public function setMethod(Method $method): self
+    {
+        $this->method = $method;
+
+        return $this;
+    }
+
+    public function getPeriod(): Period
+    {
+        return $this->period;
+    }
+
+    public function setPeriod(Period $period): self
+    {
+        $this->period = $period;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Prediction[]
+     */
+    public function getPredictions(): Collection|array
+    {
+        return $this->predictions;
+    }
+
+    /**
+     * @param Collection|Prediction[] $predictions
+     */
+    public function setPredictions(Collection|array $predictions): self
+    {
+        $this->predictions = $predictions;
+
+        return $this;
     }
 
     public function getStatus(): string
@@ -136,20 +229,5 @@ class Process
         $this->success = $success;
 
         return $this;
-    }
-
-    public function getMethod(): string
-    {
-        return $this->options['method'];
-    }
-
-    public function getMetal(): string
-    {
-        return $this->options['metal'];
-    }
-
-    public function getPeriod(): string
-    {
-        return $this->options['period'];
     }
 }

@@ -27,11 +27,11 @@ final class ProcessCreator
     public function create(ConfigureMethod $data): int
     {
         $process = (new Process())
+            ->setMetal($data->getMetal())
+            ->setMethod($data->getMethod())
+            ->setPeriod($data->getPeriod())
             ->setStatus(Process::STATUS_WAITING)
             ->setOptions([
-                'method'   => $data->getMethod()->getSlug(),
-                'metal'    => $data->getMetal()->getSlug(),
-                'period'   => $data->getPeriod()->getSlug(),
                 'start'    => $data->getStart()?->format('Y-m-d'),
                 'end'      => $data->getEnd()?->format('Y-m-d'),
                 'provider' => $data->getProvider()

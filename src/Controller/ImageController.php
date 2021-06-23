@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Repository\ImageRepository;
+use App\Entity\Process;
+use App\Repository\ProcessRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,11 +15,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 final class ImageController extends AbstractController
 {
-    private ImageRepository $imageRepository;
+    private ProcessRepository $processRepository;
 
-    public function __construct(ImageRepository $imageRepository)
+    public function __construct(ProcessRepository $processRepository)
     {
-        $this->imageRepository = $imageRepository;
+        $this->processRepository = $processRepository;
     }
 
     /**
@@ -26,14 +27,15 @@ final class ImageController extends AbstractController
      */
     public function showAction(int $id): Response
     {
-        $image = $this->imageRepository->find($id);
+        /** @var Process $process */
+        $process = $this->processRepository->find($id);
 
-        if (is_null($image)) {
+        if (is_null($process)) {
             throw $this->createNotFoundException();
         }
 
         return $this->render('image/show.html.twig', [
-            'image' => $image->getData()
+            'image' => $process->getImage()
         ]);
     }
 }

@@ -1,1 +1,3 @@
-<img src="data:image/png;base64,{{ image }}" alt="">
+{% if image is not empty %}
+    <img src="data:image/png;base64,{{ image }}" alt="">
+{% endif %}

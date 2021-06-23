@@ -8,9 +8,9 @@
 
         <form class="form mb-2">
             <label class="w-100 mb-0">
-                <select name="filter" class="custom-select" size="{{ size }}">
-                    {% for filter, name in filters %}
-                        <option value="{{ filter }}"{{ app.request.get('filter') == filter ? ' selected' }}>{{ name }}</option>
+                <select name="show" class="custom-select" size="{{ size }}">
+                    {% for process, name in filters %}
+                        <option value="{{ process }}"{{ app.request.get('show') == process ? ' selected' }}>{{ name }}</option>
                     {% endfor %}
                 </select>
             </label>
@@ -22,12 +22,12 @@
     {% if predictions is empty %}
         <span>Нет данных</span>
     {% else %}
-        {% set image = predictions|first.image %}
+        {% set process = predictions|first.process %}
 
         <div class="w-50 my-4">
-            <img class="w-100" src="data:image/png;base64,{{ image.data }}" alt="">
+            <img class="w-100" src="data:image/png;base64,{{ process.image }}" alt="">
 
-            <a href="{{ path('image_show', { id: image.id }) }}"
+            <a href="{{ path('image_show', { id: process.id }) }}"
                target="_blank"
                rel="noopener noreferrer">Открыть полностью</a>
         </div>

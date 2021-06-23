@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,24 +21,9 @@ class Prediction
     private int $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Metal", inversedBy="predictions")
+     * @ORM\ManyToOne(targetEntity="Process", inversedBy="predictions")
      */
-    private Metal $metal;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Method", inversedBy="methods")
-     */
-    private Method $method;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Period", inversedBy="periods")
-     */
-    private Period $period;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Image", inversedBy="predictions")
-     */
-    private ?Image $image = null;
+    private Process $process;
 
     /**
      * @ORM\Column(type="date")
@@ -51,65 +35,19 @@ class Prediction
      */
     private float $value;
 
-    /**
-     * @ORM\Column(type="datetime", name="created_at")
-     */
-    private DateTimeInterface $createdAt;
-
-    public function __construct(DateTimeInterface $createdAt = null)
-    {
-        $this->createdAt = is_null($createdAt) ? new DateTime() : $createdAt;
-    }
-
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getMetal(): Metal
+    public function getProcess(): Process
     {
-        return $this->metal;
+        return $this->process;
     }
 
-    public function setMetal(Metal $metal): self
+    public function setProcess(Process $process): self
     {
-        $this->metal = $metal;
-
-        return $this;
-    }
-
-    public function getMethod(): Method
-    {
-        return $this->method;
-    }
-
-    public function setMethod(Method $method): self
-    {
-        $this->method = $method;
-
-        return $this;
-    }
-
-    public function getPeriod(): Period
-    {
-        return $this->period;
-    }
-
-    public function setPeriod(Period $period): self
-    {
-        $this->period = $period;
-
-        return $this;
-    }
-
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): self
-    {
-        $this->image = $image;
+        $this->process = $process;
 
         return $this;
     }
@@ -136,10 +74,5 @@ class Prediction
         $this->value = $value;
 
         return $this;
-    }
-
-    public function getCreatedAt(): DateTimeInterface
-    {
-        return $this->createdAt;
     }
 }

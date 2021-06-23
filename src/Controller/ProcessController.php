@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Annotation\Breadcrumb;
+use App\Entity\Process;
 use App\Repository\ProcessRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,13 +51,23 @@ final class ProcessController extends AbstractController
      */
     public function listAction(): Response
     {
-        $processes = $this->processRepository->findBy([], [
-            'id' => 'DESC'
-        ]);
+        $processes = $this->processRepository->findBy([], ['id' => 'DESC']);
 
         return $this->render('process/list.html.twig', [
             'title'     => self::TITLE_LIST,
             'processes' => $processes
         ]);
+    }
+
+    /**
+     * @Route(name="check", path="check/{id}", requirements={"id"="\d+"})
+     */
+    public function checkAction(int $id): JsonResponse
+    {
+        /** @var Process $process */
+        $process = $this->processRepository->find($id);
+        $success = !is_null($process) && $process->isStatusDone();
+
+        return $this->json(['success' => $success]);
     }
 }

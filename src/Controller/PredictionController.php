@@ -31,12 +31,12 @@ final class PredictionController extends AbstractController
      */
     public function listAction(Request $request): Response
     {
-        $filter = (string) $request->query->get('filter');
+        $process = (int) $request->query->get('show');
 
         return $this->render('prediction/list.html.twig', [
             'title'       => self::TITLE_LIST,
             'filters'     => $this->predictionFilterService->getFilters(),
-            'predictions' => $this->predictionFilterService->getPredictionsByFilter($filter)
+            'predictions' => $this->predictionFilterService->getPredictionsByProcess($process)
         ]);
     }
 }
