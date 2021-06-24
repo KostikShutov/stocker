@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Annotation\Breadcrumb;
 use App\Entity\Process;
+use App\Annotation\Breadcrumb;
 use App\Repository\ProcessRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,8 +66,7 @@ final class ProcessController extends AbstractController
     {
         /** @var Process $process */
         $process = $this->processRepository->find($id);
-        $success = !is_null($process) && $process->isStatusDone();
 
-        return $this->json(['success' => $success]);
+        return $this->json(['status' => $process?->getStatus()]);
     }
 }

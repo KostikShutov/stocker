@@ -1,35 +1,50 @@
 require('bootstrap');
 
 const $ = require('jquery');
-const $statusProcessing = $('h4[data-status-processing]');
+const $progressBar = $('.progress-bar');
 
-if ($statusProcessing.length) {
+if ($progressBar.length) {
+    let waiting = false;
+    let processing = false;
     setTimeout(check, 3000);
 
     function check() {
-        $.get(
-            $statusProcessing.data('url-check'),
-            [],
-            function(response) {
-                if (response.success) {
-                    location.href = $statusProcessing.data('url-redirect');
-                } else {
+        $.get($progressBar.data('url-check'), [], function(response) {
+            switch (response.status) {
+                case 'waiting':
+                    waiting = true;
                     setTimeout(check, 3000);
-                }
+                    break;
+                case 'processing':
+                    if (waiting) {
+                        location.reload();
+                        break;
+                    }
+
+                    if (!processing) {
+                        const intervalProgress = setInterval(function () {
+                            let width = $progressBar.data('width') + 3;
+
+                            if (width >= 100) {
+                                width = 100;
+                                clearInterval(intervalProgress);
+                            }
+
+                            $progressBar.data('width', width)
+                            $progressBar.css('width', width + '%');
+                        }, 1000);
+
+                        processing = true;
+                    }
+
+                    setTimeout(check, 3000);
+                    break;
+                case 'done':
+                    location.href = $progressBar.data('url-redirect');
+                    break;
+                default:
+                    break;
             }
-        )
+        });
     }
-
-    const $statusProgress = $('.progress-bar');
-    const intervalProgress = setInterval(function() {
-        let width = $statusProgress.data('width') + 3;
-
-        if (width >= 100) {
-            width = 100;
-            clearInterval(intervalProgress);
-        }
-
-        $statusProgress.data('width', width)
-        $statusProgress.css('width', width + '%');
-    }, 1000);
 }

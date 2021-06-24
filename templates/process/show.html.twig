@@ -7,9 +7,7 @@
     {% endif %}
 
     {% if process.statusProcessing %}
-        <h4 data-url-check="{{ path('process_check', { id: process.id }) }}"
-            data-url-redirect="{{ path('prediction_list', { show: process.id }) }}"
-            data-status-processing>Прогноз запущен, необходимо подождать завершения</h4>
+        <h4>Прогноз запущен, необходимо подождать завершения</h4>
         {% set value = 10 %}
     {% endif %}
 
@@ -43,6 +41,8 @@
              aria-valuemin="0"
              aria-valuemax="100"
              style="width: {{ value }}%"
-             data-width="{{ value }}"></div>
+             data-width="{{ value }}"
+             data-url-check="{{ path('process_check', { id: process.id }) }}"
+             data-url-redirect="{{ path('prediction_list', { show: process.id }) }}"></div>
     </div>
 {% endblock %}

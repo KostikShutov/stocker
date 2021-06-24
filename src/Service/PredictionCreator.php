@@ -43,7 +43,11 @@ final class PredictionCreator
         $last = $this->stockRepository->findLast($metal, $provider);
 
         try {
-            $this->stockDownloader->download($provider, $last->getDate(), new DateTime());
+            $this->stockDownloader->download(
+                $provider,
+                is_null($last) ? new DateTime('2015-01-01') : $last->getDate(),
+                new DateTime()
+            );
         } catch (TransportException) {}
 
         $json = $this->methodRequester->request($process->getMethod()->getSlug(), [
