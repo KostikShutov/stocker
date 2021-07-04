@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use DateTimeInterface;
 use App\Entity\Metal;
 use App\Entity\Stock;
 use Doctrine\ORM\UnexpectedResultException;
@@ -60,6 +61,27 @@ final class StockRepository extends ServiceEntityRepository
                 ->getSingleResult();
         } catch (UnexpectedResultException) {
             return null;
+        }
+    }
+
+    public function findCount(
+        Metal $metal,
+        DateTimeInterface $start,
+        DateTimeInterface $end
+    ): int {
+        try {
+            return (int) $this->createQueryBuilder('stock')
+                ->select('COUNT(stock.id)')
+                ->where('stock.metal = :metal')
+                ->andWhere('stock.date >= :start')
+                ->andWhere('stock.date <= :end')
+                ->setParameter('metal', $metal)
+                ->setParameter('start', $start)
+                ->setParameter('end', $end)
+                ->getQuery()
+                ->getSingleScalarResult();
+        } catch (UnexpectedResultException) {
+            return 0;
         }
     }
 }

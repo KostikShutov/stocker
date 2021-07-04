@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use DateTime;
 use Throwable;
 use App\Service\AccuracyChecker;
 use App\Service\DateParserHelper;
@@ -33,7 +32,8 @@ final class AccuracyCheckCommand extends Command
             ->setAliases(['acc:check'])
             ->setDescription('Проверка точности нейронных сетей')
             ->addOption('start', null, InputOption::VALUE_REQUIRED, 'Start date, d.m.Y')
-            ->addOption('end', null, InputOption::VALUE_REQUIRED, 'End date, d.m.Y');
+            ->addOption('end', null, InputOption::VALUE_REQUIRED, 'End date, d.m.Y')
+            ->addOption('method', null, InputOption::VALUE_OPTIONAL, 'Method slug');
     }
 
     /**
@@ -47,8 +47,9 @@ final class AccuracyCheckCommand extends Command
 
         $start = DateParserHelper::getDateFromFormat((string) $input->getOption('start'));
         $end = DateParserHelper::getDateFromFormat((string) $input->getOption('end'));
+        $method = (string) $input->getOption('method');
 
-        $this->accuracyChecker->check($start, $end);
+        $this->accuracyChecker->check($start, $end, $method);
 
         return 0;
     }
