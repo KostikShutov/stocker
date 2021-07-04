@@ -3,6 +3,7 @@
 /public/assets
 *.DS_Store
 *__pycache__
+.env
 
 ###> docker ###
 /docker/mysql/data/*
