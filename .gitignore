@@ -3,7 +3,6 @@
 /public/assets
 *.DS_Store
 *__pycache__
-.env
 
 ###> docker ###
 /docker/mysql/data/*
@@ -11,9 +10,7 @@
 ###< docker ###
 
 ###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
+/.env
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
